@@ -57,17 +57,64 @@ func (e *Elevator) AddFloor(floor int, direction Direction, queueType RequestTyp
 	sort.Sort(e.Queue)
 }
 
-func (e *Elevator) Step() {
-	// if the elevator is empty. return
-	// if the elevator is going up find all the >= current floor, going up.
-	//   if the len of that list == 0 and the queue != len(0) change directions
-	//   go to the min of that list.
-	//   go toward that floor
-	// if the elevator is going down find all the < current floor, going down.
-	//   if the len of that list == 0 and the queue != len(0) change directions
-	//   go to the max of that list.
-	//   go toward that floor
+func (e *Elevator) goTowards(queuedFloor *QueuedFloor) {
 
+}
+
+func (e *Elevator) Step() {
+	if e.Queue.Len() == 0 {
+		return
+	}
+
+	var goingTowards QueuedFloor
+
+changedDirections:
+	if e.CurrentDirection == Up {
+		var upwardQueue QueuedFloors
+
+		for i := range e.Queue {
+			if e.Queue[i].Direction == Up && e.Queue[i].Floor >= e.CurrentFloor {
+				upwardQueue = append(upwardQueue, e.Queue[i])
+			}
+		}
+
+		if upwardQueue.Len() == 0 && e.Queue.Len() > 0 {
+			e.CurrentDirection = Down
+
+			// A goto! Well I'm going to love explain this
+			// to you guys. But I feel it is appropriate
+			// here since we are basically restarting this
+			// flow to change directions. We could also
+			// hold variables and what not to force the
+			// else condition to run but this just seems
+			// easier. :)
+			goto changedDirections
+		}
+
+		sort.Sort(upwardQueue)
+
+		goingTowards = upwardQueue[0]
+	} else {
+		var downwardQueue QueuedFloors
+
+		for i := range e.Queue {
+			if e.Queue[i].Direction == Up && e.Queue[i].Floor < e.CurrentFloor {
+				downwardQueue = append(downwardQueue, e.Queue[i])
+			}
+		}
+
+		if downwardQueue.Len() == 0 && e.Queue.Len() > 0 {
+			e.CurrentDirection = Up
+
+			goto changedDirections
+		}
+
+		sort.Sort(downwardQueue)
+
+		goingTowards = downwardQueue[0]
+	}
+
+	e.goTowards(&goingTowards)
 	// if we are at that floor. Remove the item from the floorqueue.
 }
 
