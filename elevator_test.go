@@ -7,6 +7,28 @@ import (
 )
 
 var _ = Describe("Elevator", func() {
+	var (
+		elevator *Elevator
+	)
+
+	BeforeEach(func() {
+		elevator = &Elevator{
+			CurrentFloor:     1,
+			CurrentDirection: None,
+		}
+	})
+
+	It("should move up when step is called", func() {
+		elevator.AddFloor(2, Down, PickupRequest)
+		Expect(len(elevator.Queue)).To(Equal(1))
+		elevator.Step()
+		Expect(len(elevator.Queue)).To(Equal(0))
+		Expect(elevator.CurrentFloor).To(Equal(2))
+	})
+
+})
+
+var _ = Describe("ElevatorControlSystem", func() {
 	Describe("Single Elevator", func() {
 		Context("With 2 floors", func() {
 			var (
@@ -26,8 +48,18 @@ var _ = Describe("Elevator", func() {
 				}
 			})
 
-			//			It("should queue a
-			// Floor 1
+			It("should not queue invalid requests", func() {
+				ecs.Pickup(3, Down)
+				Expect(len(ecs.Elevators[0].Queue)).To(Equal(0))
+			})
+
+			It("should queue requests ito the elevator's queue", func() {
+				ecs.Pickup(2, Down)
+				Expect(len(ecs.Elevators[0].Queue)).To(Equal(1))
+				ecs.Step()
+				//			Expect(ecs.Elevators[0].CurrentFloor).To(Equal(2))
+			})
+
 			// Request Pickup on Floor2 to go down
 			// Step -> Move elevator up one floor.
 			// Step -> Pick up person
