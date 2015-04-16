@@ -2,34 +2,56 @@ package main
 
 type Direction int
 
-const(
+const (
 	Up Direction = iota
-	Down 
+	Down
 )
 
-type ElevatorControlSystem interface {
-	//   Status(): Seq[(Int, Int, Int)]
-	//   Update(Int, Int, Int)
-	Pickup(floor int, direction Direction)
-	//   Step()
+type Elevator struct {
+	CurrentFloor int
+	Queue        []int
 }
 
-type SimpleElevator struct {
-	Elevators []int
+type ElevatorControlSystem struct {
+	Elevators []Elevator
+	NumFloors int
 }
 
-func NewSimpleElevator(numElevators int) (se SimpleElevator) {
-	// Initialize all the elevators to
+type ElevatorStatus struct {
+	ElevatorId int
+	Floor      int
+	GoalFloor  int
+}
+
+// func (ecs *ElevatorControlSystem) Status() []ElevatorStatus {
+
+// }
+
+// func (ecs *ElevatorControlSystem) Update(elevatorId, floor, goalFloor int) {
+
+// }
+
+// func (ecs *ElevatorControlSystem) Pickup(floor int, direction Direction) {
+
+// }
+
+// func (ecs *ElevatorControlSystem) Step() {
+// }
+
+func NewElevatorControlSystem(numElevators, numFloors int) (ecs *ElevatorControlSystem) {
+	ecs = &ElevatorControlSystem{}
+
+	// Initialize all the elevators
 	for i := 0; i < numElevators; i++ {
-		se.Elevators = append(se.Elevators, 0)
+		ecs.Elevators = append(ecs.Elevators, Elevator{CurrentFloor: 0})
 	}
+	ecs.NumFloors = numFloors
 
 	return
 }
 
-func main() {
-	simpleElevator := NewSimpleElevator(1)
+// func main() {
+// 	simpleElevator := NewElevatorControl(1)
 
-	simpleElevator.Pickup(
-
-}
+// 	simpleElevator.Pickup()
+// }
