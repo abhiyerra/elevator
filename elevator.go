@@ -9,7 +9,6 @@ type Direction int
 const (
 	Up Direction = iota
 	Down
-	None
 )
 
 type RequestType int
@@ -54,18 +53,22 @@ func (e *Elevator) AddFloor(floor int, direction Direction, queueType RequestTyp
 		Floor:     floor,
 		Direction: direction,
 	})
+
 	sort.Sort(e.Queue)
 }
 
 func (e *Elevator) Step() {
+	// if the elevator is empty. return
+	// if the elevator is going up find all the >= current floor, going up.
+	//   if the len of that list == 0 and the queue != len(0) change directions
+	//   go to the min of that list.
+	//   go toward that floor
+	// if the elevator is going down find all the < current floor, going down.
+	//   if the len of that list == 0 and the queue != len(0) change directions
+	//   go to the max of that list.
+	//   go toward that floor
 
-	// Find all the floors greater than the current floor.
-	// Go toward the nearest one going up. Optimize for going up.
-	// After we've readed the top then go down. Don't change direction till we have gone to the bottom.
-	// When pickedup
-	// Sort them
-	// Go to the first floor.
-
+	// if we are at that floor. Remove the item from the floorqueue.
 }
 
 type ElevatorControlSystem struct {
@@ -113,9 +116,13 @@ func (ecs *ElevatorControlSystem) Step() {
 func NewElevatorControlSystem(numElevators, numFloors int) (ecs *ElevatorControlSystem) {
 	ecs = &ElevatorControlSystem{}
 
-	// Initialize all the elevators
+	// Initialize all the elevators. Just default to going up
+	// since we are basically stating at the ground floor.
 	for i := 0; i < numElevators; i++ {
-		ecs.Elevators = append(ecs.Elevators, Elevator{CurrentFloor: 0})
+		ecs.Elevators = append(ecs.Elevators, Elevator{
+			CurrentDirection: Up,
+			CurrentFloor:     0,
+		})
 	}
 	ecs.NumFloors = numFloors
 
