@@ -74,19 +74,6 @@ type ElevatorControlSystem struct {
 	NextElevator int
 }
 
-func (ecs *ElevatorControlSystem) nearestElevator(direction Direction) (e *Elevator) {
-	for i := range ecs.Elevators {
-		e = &ecs.Elevators[i]
-	}
-	// Look at all the elevators
-	// Find the elevator closest to the floor
-	// If there is one with Direction None and Queue 0 return that.
-	// If there is only one return that.
-	// Find an elevator going in the same direction.
-
-	return
-}
-
 type ElevatorStatus struct {
 	ElevatorId int
 	Floor      int
