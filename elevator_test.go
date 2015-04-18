@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"fmt"
 	. "github.com/abhiyerra/elevator"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,70 +14,30 @@ var _ = Describe("Elevator", func() {
 
 	BeforeEach(func() {
 		elevator = &Elevator{
-			CurrentFloor:     1,
-			CurrentDirection: None,
+			CurrentFloor:     0,
+			CurrentDirection: Up,
 		}
 	})
 
 	It("should move up when step is called", func() {
-		elevator.AddFloor(2, Down, PickupRequest)
+		elevator.AddRequestFloor(1, Down)
+
 		Expect(len(elevator.Queue)).To(Equal(1))
+		fmt.Println(elevator)
+		Expect(elevator.Queue[0].Floor).To(Equal(1))
+		Expect(elevator.Queue[0].Direction).To(Equal(Down))
+
 		elevator.Step()
-		Expect(len(elevator.Queue)).To(Equal(0))
-		Expect(elevator.CurrentFloor).To(Equal(2))
-	})
 
-})
+		fmt.Println(elevator)
 
-var _ = Describe("ElevatorControlSystem", func() {
-	Describe("Single Elevator", func() {
-		Context("With 2 floors", func() {
-			var (
-				ecs *ElevatorControlSystem
-			)
+		Expect(len(elevator.Queue)).To(Equal(1))
+		Expect(elevator.CurrentFloor).To(Equal(1))
 
-			BeforeEach(func() {
-				ecs = NewElevatorControlSystem(1, 2)
-			})
+		// elevator.Step()
 
-			It("should have the correct initial fields", func() {
-				Expect(len(ecs.Elevators)).To(Equal(1))
-				Expect(ecs.NumFloors).To(Equal(2))
-
-				for _, i := range ecs.Elevators {
-					Expect(i.CurrentFloor).To(Equal(0))
-				}
-			})
-
-			It("should not queue invalid requests", func() {
-				ecs.Pickup(3, Down)
-				Expect(len(ecs.Elevators[0].Queue)).To(Equal(0))
-			})
-
-			It("should queue requests ito the elevator's queue", func() {
-				ecs.Pickup(2, Down)
-				Expect(len(ecs.Elevators[0].Queue)).To(Equal(1))
-				ecs.Step()
-				//			Expect(ecs.Elevators[0].CurrentFloor).To(Equal(2))
-			})
-
-			// Request Pickup on Floor2 to go down
-			// Step -> Move elevator up one floor.
-			// Step -> Pick up person
-			// Step -> Move elevator down one floor.
-		})
-
-		Context("With 10 floors", func() {
-			// Floor 1
-			// Request Pickup on Floor2 to go down to Floor1
-			// Request Pickup on Floor5 to go up to Floor 9
-			// Request Pickup on Floor3 to go down to Floor 2
-			// Request Pickup on Floor4 to go up to Floor 6
-			// Step -> Move elevator up one floor.
-			// Step -> Pick up person
-			// Step -> Move elevator down one floor.
-		})
-
+		// Expect(len(elevator.Queue)).To(Equal(0))
+		// Expect(elevator.CurrentFloor).To(Equal(1))
 	})
 
 })
