@@ -5,9 +5,9 @@ import (
 )
 
 type ControlSystem struct {
-	Elevators    []Elevator
-	NumFloors    int
-	NextElevator int
+	Elevators       []Elevator
+	NumFloors       int
+	CurrentElevator int
 }
 
 type ElevatorStatus struct {
@@ -28,14 +28,21 @@ func (ecs *ControlSystem) Status() (es []ElevatorStatus) {
 	return
 }
 
-func (ecs *ControlSystem) incNextElevator() {
-	// A round robin way of queuing elevators. Would make it
-	// distribute evently across all the elevators. Also protects
-	// against bottlenecks where if we pick the nearest elevator
-	// then we might be overloading that elevator with a bunch of
-	// other requests.
-	ecs.NextElevator++
-	ecs.NextElevator = ecs.NextElevator % len(ecs.Elevators)
+// A round robin way of queuing elevators. Would make it
+// distribute evently across all the elevators. Also protects
+// against bottlenecks where if we pick the nearest elevator
+// then we might be overloading that elevator with a bunch of
+// other requests.
+func (ecs *ControlSystem) nextPickupElevator() int {
+	curPickup := ecs.CurrentElevator
+
+	ecs.CurrentElevator++
+	// Restart the increment.
+	if ecs.CurrentElevator == len(ecs.Elevators) {
+		ecs.CurrentElevator = 0
+	}
+
+	return curPickup
 }
 
 // I'm a bit confused about this method. Is it saying that when a
@@ -50,8 +57,7 @@ func (ecs *ControlSystem) Pickup(floor int, direction Direction) {
 		return // That floor doesn't exist.
 	}
 
-	ecs.Elevators[ecs.NextElevator].AddRequestFloor(floor-1, direction)
-	ecs.incNextElevator()
+	ecs.Elevators[ecs.nextPickupElevator()].AddRequestFloor(floor-1, direction)
 }
 
 func (ecs *ControlSystem) Step() {
@@ -74,6 +80,7 @@ func NewControlSystem(numElevators, numFloors int) (ecs *ControlSystem) {
 		})
 	}
 	ecs.NumFloors = numFloors
+	ecs.CurrentElevator = 0
 
 	return
 }

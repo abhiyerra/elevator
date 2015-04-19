@@ -12,7 +12,7 @@ var _ = Describe("Elevator", func() {
 		elevator *Elevator
 	)
 
-	It("should move up when step is called", func() {
+	PIt("should move up when step is called", func() {
 		elevator = &Elevator{
 			CurrentFloor:     0,
 			CurrentDirection: Up,
@@ -38,7 +38,7 @@ var _ = Describe("Elevator", func() {
 		Expect(elevator.CurrentFloor).To(Equal(1))
 	})
 
-	It("should pickup for both up and down on one floor", func() {
+	PIt("should pickup for both up and down on one floor", func() {
 		elevator = &Elevator{
 			CurrentFloor:     0,
 			CurrentDirection: Up,

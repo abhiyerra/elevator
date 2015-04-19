@@ -22,6 +22,7 @@ type Elevator struct {
 }
 
 func (e *Elevator) AddRequestFloor(floor int, direction Direction) {
+	log.Println("queuing floor", floor)
 	e.Queue = append(e.Queue, QueuedFloor{
 		Floor:     floor,
 		Direction: direction,
