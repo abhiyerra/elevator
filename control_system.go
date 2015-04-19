@@ -49,15 +49,18 @@ func (ecs *ControlSystem) nextPickupElevator() int {
 // Pickup happens on a floor then we need to queue in a destination
 // floor? That is what this method is assuming.
 func (ecs *ControlSystem) Update(elevatorId, floor, goalFloor int) {
-	//	ecs.Elevators[elevatorId].AddDestinationFloor(floor, goalFloor)
+	ecs.Elevators[elevatorId].AddDestinationFloor(floor, goalFloor)
 }
 
-func (ecs *ControlSystem) Pickup(floor int, direction Direction) {
+func (ecs *ControlSystem) Pickup(floor int, direction Direction) (elevatorId int) {
 	if floor > ecs.NumFloors {
 		return // That floor doesn't exist.
 	}
 
-	ecs.Elevators[ecs.nextPickupElevator()].AddRequestFloor(floor-1, direction)
+	elevatorId = ecs.nextPickupElevator()
+	ecs.Elevators[elevatorId].AddRequestFloor(floor-1, direction)
+
+	return elevatorId
 }
 
 func (ecs *ControlSystem) Step() {
