@@ -55,7 +55,7 @@ A simulation is provided in main.go
 ```
 cd $GOPATH
 go get -u github.com/abhiyerra/elevator
-go test -cover #  To run the tests
+go test -cover #  To run the tests. Cover shows the test coverage.
 go build .
 ./elevator # Should run a provided simulation.
 ```

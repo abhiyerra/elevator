@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type ControlSystem struct {
 	Elevators       []Elevator
 	NumFloors       int
@@ -10,6 +14,10 @@ type ElevatorStatus struct {
 	ElevatorId int
 	Floor      int
 	GoalFloor  int
+}
+
+func (e ElevatorStatus) String() string {
+	return fmt.Sprintf("ElevatorId: %3d\tFloor: %3d\tGoalFloor: %3d\n", e.ElevatorId, e.Floor, e.GoalFloor)
 }
 
 func (ecs *ControlSystem) Status() (es []ElevatorStatus) {
