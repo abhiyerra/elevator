@@ -7,11 +7,11 @@ import (
 )
 
 var _ = Describe("ControlSystem", func() {
-	PContext("with 2 floors", func() {
-		var (
-			ecs *ControlSystem
-		)
+	var (
+		ecs *ControlSystem
+	)
 
+	Describe("NewControlSystem", func() {
 		BeforeEach(func() {
 			ecs = NewControlSystem(1, 2)
 		})
@@ -19,31 +19,21 @@ var _ = Describe("ControlSystem", func() {
 		It("should have the correct initial fields", func() {
 			Expect(len(ecs.Elevators)).To(Equal(1))
 			Expect(ecs.NumFloors).To(Equal(2))
+			Expect(ecs.CurrentElevator).To(Equal(0))
 
 			for _, i := range ecs.Elevators {
 				Expect(i.CurrentFloor).To(Equal(0))
 			}
 		})
 
-		It("should not queue invalid requests", func() {
-			ecs.Pickup(3, Down)
-			Expect(len(ecs.Elevators[0].Queue)).To(Equal(0))
-		})
+	})
 
-		It("should queue requests ito the elevator's queue", func() {
-			ecs.Pickup(2, Down)
-			Expect(len(ecs.Elevators[0].Queue)).To(Equal(1))
-			ecs.Step()
-			//			Expect(ecs.Elevators[0].CurrentFloor).To(Equal(2))
-		})
-
+	PContext("With 3 floors", func() {
 		// Request Pickup on Floor2 to go down
 		// Step -> Move elevator up one floor.
 		// Step -> Pick up person
 		// Step -> Move elevator down one floor.
-	})
 
-	PContext("With 3 floors", func() {
 		// Floor 1
 		// Request Pickup on Floor2 to go down to Floor1
 		// Request Pickup on Floor5 to go up to Floor 9
@@ -55,10 +45,6 @@ var _ = Describe("ControlSystem", func() {
 	})
 
 	Describe("Pickup", func() {
-		var (
-			ecs *ControlSystem
-		)
-
 		BeforeEach(func() {
 			ecs = NewControlSystem(3, 3)
 		})
