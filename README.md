@@ -27,20 +27,24 @@ to the next increment of the elevator that is available.
  - Step():
     - No change.
 
-# Additional Changes I would make
+# Further Changes
 
- - We are not deduplicating requests here.
- - Right now we are just round robining all requests. Say there is a
-   pickup on floor 3 for down twice. Then two elevators would both get
-   those requests. Then again this is what happens in my building so
-   maybe it's not a bug but a way to request an additional elevator if
-   say the one that was requested gets bottlenecked.
+ - We are not deduplicating requests in this elevator. Right now we
+   are just round robining all requests. Say there is a pickup request
+   on floor 3 to go down twice. This causes two elevators to enqueue
+   those requests. Then again this is what happens in my building
+   so maybe it's not a bug but a way to request an additional elevator
+   if say the one that was requested gets bottlenecked.
  - Another nice scheduling algorithm would be to check the elevators
    for the length of their queues and pick the elevator with the least
-   entries in its queue.
+   entries in its queues and the closest to the current floor. This
+   would reduce the time waiting if in our simulation 1 step is
+   assumed to take a set amount of time.
  - There would be another limitation of building where the elevators
-   may not go to all the floors. The code would have to change to
-   handle that.
+   may not go to all the floors. For example, say in a 30 floor
+   building elevator 1 goes to floors 1-10, elevator 2 goes to floors
+   1, 11-20 and elevator 3 goes to floors 1,21-30. The code would have
+   to change to handle that.
 
 ## Building & Running
 
