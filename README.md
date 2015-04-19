@@ -1,67 +1,45 @@
 # Elevator Control System
 
-Things to be aware of:
+The elevator control system gives the entire control of pickup and
+destinations to the Elevator struct. The Elevator Control System
+basically uses a simple round robin algorithm to queue pickup requests
+to the next increment of the elevator that is available.
 
- - [ ] How many elevators?
- - [ ] How many people are waiting for the elevator in each floor?
- - [ ] How fast does the elevator go up and down?  Is the speed constant
-   per floor or does it have one of those accelerators?
- - [ ] Can we upgrade the system at a later time? Can we updating the
-   scheduling system?
- - [ ] What is the rest state of the elevators? Do they all go down or
-   do they spread out so there can be an optimal time to pick up an
-   elevator?
- - [ ] How do we handle the numbering of the elevators?
+## Change to the API
 
-Test cases:
- - [ ] What's the case for one elevator?
- - [ ] What's the case for 2 elevators?
- - [ ] What's the case for n elevators?
- - [ ] What happens if every button is pressed?
- - [ ] What happens if there are people on various floors?
+  - Status(): []ElevatorStatus
+    - Status returns a list of ElevatorStatus structs with keys. Just
+      returning a list of integers would not make a good api contract
+      since it does not really specify what we are returning which is
+      prone to error from the users of the API. I used a struct here
+      but a hash of values would have also worked.
+ - Pickup(int, Direction): int
+    - Pickup returns the elevatorId since we will need to use it for
+      the update. It doesn't seem to make much sense to just add a
+      pickup but not knowing which elevator got the pickup
+      request.
+ - Update(Int, Int, Int):
+    - This just queues the requests that are received to a
+      queue. These are handled when the elevator does the pickup. I
+      suppose this doesn't handle the case where elevators have the
+      destination floor outside since it assumes you go to a pickup
+      floor to choose the destination.
+ - Step():
+    - No change.
 
-Changes to the API:
+# Additional Changes I would make
 
- - Pickup(floor int, direction Direction): I will be using a Direction
-   type so we have an abstraction to represent the direction.
- - Have an elevator type. Where we queue up the various floors an
-   elevator should visit.
+ - We are not deduplicating requests here.
+ - Right now we are just round robining all requests. Say there is a
+   pickup on floor 3 for down twice. Then two elevators would both get
+   those requests. Then again this is what happens in my building so
+   maybe it's not a bug but a way to request an additional elevator if
+   say the one that was requested gets bottlenecked.
+ - Another nice scheduling algorithm would be to check the elevators
+   for the length of their queues and pick the elevator with the least
+   entries in its queue.
+ - There would be another limitation of building where the elevators
+   may not go to all the floors. The code would have to change to
+   handle that.
 
-
-There are multiple scheduling algorithms based on different aspects of
-the elevators, the building, etc.
-
- - The design I use is simple in that it that the elevators go in a
-   single direction based on the queuing. So an elevator would have to
-   know what direction it is going and queue in all the
-
-
-
-
-
-
-Why do it this way? We can give the elevator a level of responsibility
-and distribute the load throughout the building. So if there are a bunch of people
-
-
-Other algorithms to use:
-
- - If say in a 10 floor building the 7th floor paid a premium to
-   always receive the elevators first then we would use a priority
-   queue for queuing requests.
- - If we have a
-
- - Say we have 3 elevators and 30 floors. The we divide the elevators
- into the floors to get 10 floors that each elevator is responsible
- for.
-   - So elevator 1 is responsible for floors 1-10
-   - So elevator 2 is responsible for floors 1-20
-   - So elevator 3 is responsible for floors 1-30
- - They are responsible for them insofar as requests are made on those
-   floors. The elevators themselves can go to whatever floors.
- - When a person requests a pickup an elevator designated for that
-   floor picks them up.
-    - The pick up happens in a list with the highest requested at the
-      top.
-    - When the pickup is done and there are no more people in the
-      elevator it goes back to the first floor.
+## Building & Running
