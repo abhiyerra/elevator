@@ -70,6 +70,7 @@ func NewControlSystem(numElevators, numFloors int) (ecs *ControlSystem) {
 		ecs.Elevators = append(ecs.Elevators, Elevator{
 			CurrentDirection: Up,
 			CurrentFloor:     0,
+			NumFloors:        numFloors,
 		})
 	}
 	ecs.NumFloors = numFloors

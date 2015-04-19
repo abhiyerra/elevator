@@ -3,6 +3,8 @@ package main
 type QueuedFloor struct {
 	Floor     int
 	Direction Direction
+	// For use with destination after pickup
+	GoalFloor int
 }
 
 type QueuedFloors []QueuedFloor

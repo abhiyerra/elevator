@@ -13,11 +13,12 @@ const (
 )
 
 type Elevator struct {
-	CurrentFloor     int
+	CurrentFloor     int // Starts at 0
 	CurrentDirection Direction
 	Queue            QueuedFloors
 	DestinationQueue QueuedFloors
 	CurrentGoalFloor int
+	NumFloors        int
 }
 
 func (e *Elevator) AddRequestFloor(floor int, direction Direction) {
@@ -29,14 +30,22 @@ func (e *Elevator) AddRequestFloor(floor int, direction Direction) {
 	sort.Sort(e.Queue)
 }
 
-// func (e *Elevator) AddDestinationFloor(floor int, direction Direction) {
-// 	e.Queue = append(e.Queue, QueuedFloor{
-// 		Floor:     floor,
-// 		Direction: direction,
-// 	})
+func (e *Elevator) AddDestinationFloor(floor int, goalFloor int) {
+	var direction Direction
+	if goalFloor > floor {
+		direction = Up
+	} else {
+		direction = Down
+	}
 
-// 	sort.Sort(e.Queue)
-// }
+	e.Queue = append(e.DestinationQueue, QueuedFloor{
+		Floor:     floor,
+		Direction: direction,
+		GoalFloor: goalFloor,
+	})
+
+	sort.Sort(e.DestinationQueue)
+}
 
 func (e *Elevator) goTowards(queuedFloor *QueuedFloor) {
 	if queuedFloor.Floor > e.CurrentFloor {
