@@ -1,9 +1,5 @@
 package main
 
-import (
-	"log"
-)
-
 type ControlSystem struct {
 	Elevators       []Elevator
 	NumFloors       int
@@ -64,7 +60,6 @@ func (ecs *ControlSystem) Pickup(floor int, direction Direction) (elevatorId int
 }
 
 func (ecs *ControlSystem) Step() {
-	log.Println(ecs.Elevators)
 	for i := range ecs.Elevators {
 		ecs.Elevators[i].Step()
 	}

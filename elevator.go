@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"sort"
 )
 
@@ -66,8 +65,6 @@ func (e *Elevator) upwardAndDownwardQueue() (upwardQueue QueuedFloors, downwardQ
 func (e *Elevator) appendDestinationFloors() {
 	destFloors := e.DestinationQueue.DestsWithFloorAndDirection(e.CurrentFloor, e.CurrentDirection)
 
-	log.Println("destfloors size", len(destFloors), destFloors)
-
 	for i := 0; i < len(destFloors); i++ {
 		e.Queue = append(e.Queue, QueuedFloor{
 			Floor:     destFloors[i].GoalFloor,
@@ -86,25 +83,19 @@ func (e *Elevator) Step() {
 
 	switch {
 	case e.CurrentDirection == Up && upwardQueue.Len() == 0 && e.Queue.Len() > 0:
-		log.Println("No where to go up, going down")
 		e.CurrentDirection = Down
 	case e.CurrentDirection == Up && upwardQueue.Len() > 0:
 		goingTowards = upwardQueue.NextUpward(e.CurrentFloor)
-		log.Println("Going up to floor", goingTowards)
 	case e.CurrentDirection == Down && downwardQueue.Len() == 0 && e.Queue.Len() > 0:
-		log.Println("No where to go down, going up")
 		e.CurrentDirection = Up
 	case e.CurrentDirection == Down && downwardQueue.Len() > 0:
 		goingTowards = downwardQueue.NextDownward(e.CurrentFloor)
-		log.Println("Going down to floor", goingTowards)
 	case e.Queue.Len() == 0:
-		log.Println("No more steps to take")
 		return
 	}
 
 	if goingTowards != nil {
 		e.CurrentGoalFloor = goingTowards.Floor
-		log.Println("Going towards", goingTowards, "current goal floor", e.CurrentGoalFloor)
 
 		if goingTowards.Floor > e.CurrentFloor {
 			e.CurrentFloor++
