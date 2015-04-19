@@ -28,22 +28,6 @@ var _ = Describe("ControlSystem", func() {
 
 	})
 
-	PContext("With 3 floors", func() {
-		// Request Pickup on Floor2 to go down
-		// Step -> Move elevator up one floor.
-		// Step -> Pick up person
-		// Step -> Move elevator down one floor.
-
-		// Floor 1
-		// Request Pickup on Floor2 to go down to Floor1
-		// Request Pickup on Floor5 to go up to Floor 9
-		// Request Pickup on Floor3 to go down to Floor 2
-		// Request Pickup on Floor4 to go up to Floor 6
-		// Step -> Move elevator up one floor.
-		// Step -> Pick up person
-		// Step -> Move elevator down one floor.
-	})
-
 	Describe("Pickup", func() {
 		BeforeEach(func() {
 			ecs = NewControlSystem(3, 3)
@@ -83,6 +67,47 @@ var _ = Describe("ControlSystem", func() {
 			Expect(len(ecs.Elevators[2].Queue)).To(Equal(1))
 			Expect(ecs.CurrentElevator).To(Equal(1))
 		})
-
 	})
+
+	Describe("Update", func() {
+		var (
+			elevatorId int
+		)
+
+		BeforeEach(func() {
+			ecs = NewControlSystem(3, 10)
+			elevatorId = ecs.Pickup(4, Up)
+		})
+
+		It("should add the destination floor", func() {
+			ecs.Update(elevatorId, 4, 7)
+
+			Expect(len(ecs.Elevators[0].Queue)).To(Equal(1))
+			Expect(len(ecs.Elevators[0].DestinationQueue)).To(Equal(1))
+
+			Expect(len(ecs.Elevators[1].Queue)).To(Equal(0))
+			Expect(len(ecs.Elevators[2].Queue)).To(Equal(0))
+			Expect(ecs.CurrentElevator).To(Equal(1))
+
+			ecsStatus := ecs.Status()
+			Expect(len(ecsStatus)).To(Equal(3))
+			Expect(ecsStatus[0].ElevatorId).To(Equal(0))
+			Expect(ecsStatus[0].Floor).To(Equal(1))
+			Expect(ecsStatus[0].GoalFloor).To(Equal(1))
+
+			ecs.Step()
+
+			ecsStatus = ecs.Status()
+			Expect(ecsStatus[0].ElevatorId).To(Equal(0))
+			Expect(ecsStatus[0].Floor).To(Equal(2))
+			Expect(ecsStatus[0].GoalFloor).To(Equal(4))
+
+			ecs.Step()
+			ecsStatus = ecs.Status()
+			Expect(ecsStatus[0].ElevatorId).To(Equal(0))
+			Expect(ecsStatus[0].Floor).To(Equal(3))
+			Expect(ecsStatus[0].GoalFloor).To(Equal(4))
+		})
+	})
+
 })

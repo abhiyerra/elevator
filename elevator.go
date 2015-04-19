@@ -91,7 +91,6 @@ func (e *Elevator) Step() {
 	case e.CurrentDirection == Down && downwardQueue.Len() > 0:
 		goingTowards = downwardQueue.NextDownward(e.CurrentFloor)
 	case e.Queue.Len() == 0:
-		e.CurrentGoalFloor = -1
 		return
 	}
 

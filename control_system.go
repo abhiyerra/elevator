@@ -16,8 +16,8 @@ func (ecs *ControlSystem) Status() (es []ElevatorStatus) {
 	for i, e := range ecs.Elevators {
 		es = append(es, ElevatorStatus{
 			ElevatorId: i,
-			Floor:      e.CurrentFloor,
-			GoalFloor:  e.CurrentGoalFloor,
+			Floor:      e.CurrentFloor + 1,
+			GoalFloor:  e.CurrentGoalFloor + 1,
 		})
 	}
 
@@ -45,7 +45,7 @@ func (ecs *ControlSystem) nextPickupElevator() int {
 // Pickup happens on a floor then we need to queue in a destination
 // floor? That is what this method is assuming.
 func (ecs *ControlSystem) Update(elevatorId, floor, goalFloor int) {
-	ecs.Elevators[elevatorId].AddDestinationFloor(floor, goalFloor)
+	ecs.Elevators[elevatorId].AddDestinationFloor(floor-1, goalFloor-1)
 }
 
 func (ecs *ControlSystem) Pickup(floor int, direction Direction) (elevatorId int) {
