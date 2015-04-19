@@ -142,6 +142,7 @@ var _ = Describe("Elevator", func() {
 			Expect(len(elevator.DestinationQueue)).To(Equal(0))
 			Expect(elevator.CurrentFloor).To(Equal(0))
 			Expect(elevator.CurrentDirection).To(Equal(Down))
+			Expect(elevator.CurrentGoalFloor).To(Equal(-1))
 		})
 	})
 })
