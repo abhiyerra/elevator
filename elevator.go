@@ -22,7 +22,6 @@ type Elevator struct {
 }
 
 func (e *Elevator) AddRequestFloor(floor int, direction Direction) {
-	log.Println("queuing floor", floor)
 	e.Queue = append(e.Queue, QueuedFloor{
 		Floor:     floor,
 		Direction: direction,
@@ -39,7 +38,9 @@ func (e *Elevator) AddDestinationFloor(floor int, goalFloor int) {
 		direction = Down
 	}
 
-	e.Queue = append(e.DestinationQueue, QueuedFloor{
+	log.Println("queuing floor", floor, goalFloor, direction == Up)
+
+	e.DestinationQueue = append(e.DestinationQueue, QueuedFloor{
 		Floor:     floor,
 		Direction: direction,
 		GoalFloor: goalFloor,
@@ -48,68 +49,59 @@ func (e *Elevator) AddDestinationFloor(floor int, goalFloor int) {
 	sort.Sort(e.DestinationQueue)
 }
 
-func (e *Elevator) goTowards(queuedFloor *QueuedFloor) {
-	if queuedFloor.Floor > e.CurrentFloor {
-		e.CurrentFloor++
-	} else {
-		e.CurrentFloor--
+func (e *Elevator) upwardAndDownwardQueue() (upwardQueue QueuedFloors, downwardQueue QueuedFloors) {
+	for i := 0; i < len(e.Queue); i++ {
+		switch {
+		case e.Queue[i].Direction == Up:
+			upwardQueue = append(upwardQueue, e.Queue[i])
+		case e.Queue[i].Direction == Down:
+			downwardQueue = append(downwardQueue, e.Queue[i])
+		}
 	}
+
+	sort.Sort(upwardQueue)
+	sort.Sort(downwardQueue)
+
+	return
 }
 
 func (e *Elevator) Step() {
-	if e.Queue.Len() == 0 {
+	var (
+		goingTowards               *QueuedFloor
+		upwardQueue, downwardQueue = e.upwardAndDownwardQueue()
+	)
+
+	log.Println("Floors above", e.CurrentFloor, len(upwardQueue), e.Queue[0].Direction == Up)
+	log.Println("Floors below", e.CurrentFloor, len(downwardQueue))
+
+	switch {
+	case e.CurrentDirection == Up && upwardQueue.Len() == 0 && e.Queue.Len() > 0:
+		log.Println("No where to go up, going down")
+		e.CurrentDirection = Down
+	case e.CurrentDirection == Up && upwardQueue.Len() > 0:
+		goingTowards = upwardQueue.NextUpward(e.CurrentFloor)
+		log.Println("Going up to floor", goingTowards)
+	case e.CurrentDirection == Down && downwardQueue.Len() == 0 && e.Queue.Len() > 0:
+		log.Println("No where to go down, going up")
+		e.CurrentDirection = Up
+	case e.CurrentDirection == Down && downwardQueue.Len() > 0:
+		goingTowards = downwardQueue.NextDownward(e.CurrentFloor)
+		log.Println("Going down to floor", goingTowards)
+	case e.Queue.Len() == 0:
 		log.Println("No more steps to take")
 		return
 	}
 
-	var goingTowards QueuedFloor
+	if goingTowards != nil {
+		e.CurrentGoalFloor = goingTowards.Floor
+		log.Println("Going towards", goingTowards, "current goal floor", e.CurrentGoalFloor)
 
-	if e.CurrentDirection == Up {
-		var upwardQueue QueuedFloors
-
-		log.Println("Going up")
-
-		for i := 0; i < len(e.Queue); i++ {
-			log.Println("Going up, to floor", i, "current floor", e.CurrentFloor)
-
-			if e.Queue[i].Direction == Up && e.Queue[i].Floor >= e.CurrentFloor {
-				log.Println("Going up, to floor", e.Queue[i].Floor)
-
-				upwardQueue = append(upwardQueue, e.Queue[i])
-			}
-		}
-
-		if upwardQueue.Len() == 0 && e.Queue.Len() > 0 {
-			log.Println("No where to go up, going down")
-			e.CurrentDirection = Down
+		if goingTowards.Floor > e.CurrentFloor {
+			e.CurrentFloor++
 		} else {
-			sort.Sort(upwardQueue)
-
-			upwardToFloor := upwardQueue[0]
-			log.Println("Going up to floor", upwardToFloor)
-			e.goTowards(&upwardToFloor)
+			e.CurrentFloor--
 		}
 	}
 
-	if e.CurrentDirection == Down {
-		var downwardQueue QueuedFloors
-
-		for i := 0; i < len(e.Queue); i++ {
-			if e.Queue[i].Direction == Up && e.Queue[i].Floor < e.CurrentFloor {
-				downwardQueue = append(downwardQueue, e.Queue[i])
-			}
-		}
-
-		if downwardQueue.Len() == 0 && e.Queue.Len() > 0 {
-			e.CurrentDirection = Up
-		} else {
-			sort.Sort(downwardQueue)
-
-			e.goTowards(&downwardQueue[0])
-		}
-	}
-
-	e.CurrentGoalFloor = goingTowards.Floor
-
-	// if we are at that floor. Remove the item from the floorqueue.
+	e.Queue = e.Queue.RemoveFloorAndDirection(e.CurrentFloor, e.CurrentDirection)
 }

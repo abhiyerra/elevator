@@ -87,3 +87,7 @@ func NewControlSystem(numElevators, numFloors int) (ecs *ControlSystem) {
 
 	return
 }
+
+func main() {
+
+}
