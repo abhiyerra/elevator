@@ -44,3 +44,13 @@ func (s QueuedFloors) NextUpward(floor int) *QueuedFloor {
 func (s QueuedFloors) NextDownward(floor int) *QueuedFloor {
 	return &s[s.Len()-1]
 }
+
+func (s QueuedFloors) DestsWithFloorAndDirection(floor int, direction Direction) (q QueuedFloors) {
+	for i := 0; i < s.Len(); i++ {
+		if s[i].Floor == floor && s[i].Direction == direction {
+			q = append(q, s[i])
+		}
+	}
+
+	return q
+}

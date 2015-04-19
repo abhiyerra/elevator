@@ -88,48 +88,60 @@ var _ = Describe("Elevator", func() {
 			// that is where we are picking up it should remove
 			// the floor from the queue. But it should continue
 			// moving up to the destination floor of 2.
-			Expect(len(elevator.Queue)).To(Equal(1))
-			Expect(len(elevator.DestinationQueue)).To(Equal(2))
+			Expect(len(elevator.Queue)).To(Equal(2))
+			Expect(len(elevator.DestinationQueue)).To(Equal(1))
 			Expect(elevator.CurrentFloor).To(Equal(1))
 			Expect(elevator.Queue[0].Floor).To(Equal(1))
 			Expect(elevator.Queue[0].Direction).To(Equal(Down))
+			Expect(elevator.Queue[1].Floor).To(Equal(2))
+			Expect(elevator.Queue[1].Direction).To(Equal(Up))
+			Expect(elevator.DestinationQueue[0].Floor).To(Equal(1))
+			Expect(elevator.DestinationQueue[0].GoalFloor).To(Equal(0))
+			Expect(elevator.DestinationQueue[0].Direction).To(Equal(Down))
 			Expect(elevator.CurrentDirection).To(Equal(Up))
 
 			elevator.Step()
 
-			// We will be looking at the destination list now and
-			// moving toward the destination floor of 2 and change
-			// direction.
-			// Expect(len(elevator.Queue)).To(Equal(1))
-			// Expect(len(elevator.DestinationQueue)).To(Equal(1))
-			// Expect(elevator.CurrentFloor).To(Equal(2))
-			// Expect(elevator.Queue[0].Floor).To(Equal(1))
-			// Expect(elevator.Queue[0].Direction).To(Equal(Down))
-			// Expect(elevator.CurrentDirection).To(Equal(Down))
+			// We will be going to Floor 2 and then change
+			// directions.
+			Expect(len(elevator.Queue)).To(Equal(1))
+			Expect(len(elevator.DestinationQueue)).To(Equal(1))
+			Expect(elevator.CurrentFloor).To(Equal(2))
+			Expect(elevator.CurrentDirection).To(Equal(Up))
+			Expect(elevator.Queue[0].Floor).To(Equal(1))
+			Expect(elevator.Queue[0].Direction).To(Equal(Down))
 
-			// elevator.Step()
+			elevator.Step()
 
-			// Go back down to floor 1. Do a pickup
-			// Expect(len(elevator.Queue)).To(Equal(0))
-			// Expect(len(elevator.DestinationQueue)).To(Equal(1))
-			// Expect(elevator.CurrentFloor).To(Equal(1))
-			// Expect(elevator.CurrentDirection).To(Equal(Down))
+			// Change directions
+			Expect(len(elevator.Queue)).To(Equal(1))
+			Expect(len(elevator.DestinationQueue)).To(Equal(1))
+			Expect(elevator.CurrentFloor).To(Equal(2))
+			Expect(elevator.CurrentDirection).To(Equal(Down))
 
-			// elevator.Step()
+			elevator.Step()
 
-			// // Go to floor 0.
-			// Expect(len(elevator.Queue)).To(Equal(0))
-			// Expect(len(elevator.DestinationQueue)).To(Equal(0))
-			// Expect(elevator.CurrentFloor).To(Equal(0))
-			// Expect(elevator.CurrentDirection).To(Equal(Down))
+			// Go back down to floor . Do a pickup
+			Expect(len(elevator.Queue)).To(Equal(1))
+			Expect(len(elevator.DestinationQueue)).To(Equal(0))
+			Expect(elevator.CurrentFloor).To(Equal(1))
+			Expect(elevator.CurrentDirection).To(Equal(Down))
 
-			// elevator.Step()
+			elevator.Step()
 
-			// // Result in a no-op
-			// Expect(len(elevator.Queue)).To(Equal(0))
-			// Expect(len(elevator.DestinationQueue)).To(Equal(0))
-			// Expect(elevator.CurrentFloor).To(Equal(0))
-			// Expect(elevator.CurrentDirection).To(Equal(Down))
+			// Go to floor 0.
+			Expect(len(elevator.Queue)).To(Equal(0))
+			Expect(len(elevator.DestinationQueue)).To(Equal(0))
+			Expect(elevator.CurrentFloor).To(Equal(0))
+			Expect(elevator.CurrentDirection).To(Equal(Down))
+
+			elevator.Step()
+
+			// Result in a no-op
+			Expect(len(elevator.Queue)).To(Equal(0))
+			Expect(len(elevator.DestinationQueue)).To(Equal(0))
+			Expect(elevator.CurrentFloor).To(Equal(0))
+			Expect(elevator.CurrentDirection).To(Equal(Down))
 		})
 	})
 })

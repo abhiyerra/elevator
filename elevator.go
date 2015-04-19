@@ -38,8 +38,6 @@ func (e *Elevator) AddDestinationFloor(floor int, goalFloor int) {
 		direction = Down
 	}
 
-	log.Println("queuing floor", floor, goalFloor, direction == Up)
-
 	e.DestinationQueue = append(e.DestinationQueue, QueuedFloor{
 		Floor:     floor,
 		Direction: direction,
@@ -65,14 +63,26 @@ func (e *Elevator) upwardAndDownwardQueue() (upwardQueue QueuedFloors, downwardQ
 	return
 }
 
+func (e *Elevator) appendDestinationFloors() {
+	destFloors := e.DestinationQueue.DestsWithFloorAndDirection(e.CurrentFloor, e.CurrentDirection)
+
+	log.Println("destfloors size", len(destFloors), destFloors)
+
+	for i := 0; i < len(destFloors); i++ {
+		e.Queue = append(e.Queue, QueuedFloor{
+			Floor:     destFloors[i].GoalFloor,
+			Direction: destFloors[i].Direction,
+		})
+	}
+
+	e.DestinationQueue = e.DestinationQueue.RemoveFloorAndDirection(e.CurrentFloor, e.CurrentDirection)
+}
+
 func (e *Elevator) Step() {
 	var (
 		goingTowards               *QueuedFloor
 		upwardQueue, downwardQueue = e.upwardAndDownwardQueue()
 	)
-
-	log.Println("Floors above", e.CurrentFloor, len(upwardQueue), e.Queue[0].Direction == Up)
-	log.Println("Floors below", e.CurrentFloor, len(downwardQueue))
 
 	switch {
 	case e.CurrentDirection == Up && upwardQueue.Len() == 0 && e.Queue.Len() > 0:
@@ -104,4 +114,5 @@ func (e *Elevator) Step() {
 	}
 
 	e.Queue = e.Queue.RemoveFloorAndDirection(e.CurrentFloor, e.CurrentDirection)
+	e.appendDestinationFloors()
 }
