@@ -43,3 +43,19 @@ to the next increment of the elevator that is available.
    handle that.
 
 ## Building & Running
+
+All the simulation files are in main.go. This being a go project
+please follow the instructions to setup the go environment. The code
+has been tested under go1.4.2. Instructions on setting up a go
+environment can be gleaned here:
+https://golang.org/doc/code.html#GOPATH
+
+A simulation is provided in main.go
+
+```
+cd $GOPATH
+go get -u github.com/abhiyerra/elevator
+go test -cover #  To run the tests
+go build .
+./elevator # Should run a provided simulation.
+```
